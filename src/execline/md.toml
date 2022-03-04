@@ -1,6 +1,6 @@
-name = "nsss"
-version = "0.2.0.1"
-description = "ska user db thing"
+name = "execline"
+version = "2.8.2.0"
+description = "ska scripting libraries for stuff"
 authors = ["skalibs <?@skarnet.org>"]
 license = "ISC"
 tracked_files = [""]
