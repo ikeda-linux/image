@@ -7,10 +7,19 @@ if [[ ! "$EUID" == "0" ]]; then
     exit 1
 fi
 
+NDISK=""
+if [[ ! "$1" == "" ]]; then
+    NDISK="$1"
+fi
+
 UNPACK_TGT="ikeda_fs"
 
 if [[ -d ${UNPACK_TGT} ]]; then
     rm -rf ${UNPACK_TGT}
+fi
+
+if [[ -d ikeda ]]; then
+    rm ikeda
 fi
 
 mkdir ${UNPACK_TGT}
@@ -34,8 +43,11 @@ cp -rv src/busybox/fuck-tar/* ${UNPACK_TGT}/.
 size=$(du -sh ${UNPACK_TGT} | awk '{ print $1 }')
 
 echo "fs size in ${UNPACK_TGT} is ${size}"
-printf "Disk size (MB)? : "
-read NDISK
+
+if [[ "$NDISK" == "" ]]; then
+    printf "Disk size (MB)? : "
+    read NDISK
+fi
 
 fallocate -l${NDISK}M ikeda
 parted ikeda mklabel msdos --script
@@ -50,7 +62,9 @@ fi
 fs_root=${UNPACK_TGT}
 
 loopdev=$(losetup -P -f --show ikeda)
-mkdir ikeda_mount
+if [[ ! -d ikeda_mount ]]; then
+    mkdir ikeda_mount
+fi
 mkfs.ext4 ${loopdev}p1
 mount ${loopdev}p1 ikeda_mount
 cp -rv ${fs_root}/* ikeda_mount/.
@@ -72,9 +86,22 @@ pushd limine
 ./limine-install-linux-x86_64 ../ikeda
 popd
 
-printf "Remove FS dir? (Y/n)"
+printf "Remove FS dir? (Y/n): "
 read rmd
 
 if [[ ! "$rmd" == "n" ]]; then
     rm -rfv ${UNPACK_TGT}
+else
+    printf "RootFS tarball? (Y/n): "
+    read rtb
+    if [[ ! "$rtb" == "n" ]]; then
+        printf "Tarball filename: "
+        tar -cvf $(read) ikeda_fs/*
+        printf "Remove FS dir? (Y/n): "
+        read rmd
+
+        if [[ ! "$rmd" == "n" ]]; then
+            rm -rfv ${UNPACK_TGT}
+        fi
+    fi
 fi
