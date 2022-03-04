@@ -21,9 +21,9 @@ get () {
 
 build () {
     cd ${src}/skalibs-${ver}
-    mkdir -p ${out}/overlay
+    mkdir -p ${out}/overlay/usr
     inf "Building..."
-    CC="${MGCC}" ./configure --prefix=${out}/overlay
+    CC="${MGCC}" ./configure --prefix=${out}/overlay/usr
     make -j$(nproc)
     make install
 }
