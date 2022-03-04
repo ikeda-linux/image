@@ -1,5 +1,5 @@
 name = "linux-vanilla"
-version = "5.15.6"
+version = "5.16.12"
 description = "linux kernel"
 authors = ["linus torvalds <torvalds@osdl.org>"]
 license = "gplv2"

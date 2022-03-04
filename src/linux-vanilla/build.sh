@@ -3,7 +3,7 @@
 src="$(pwd)/src"
 out="$(pwd)/out"
 dir="$(pwd)/."
-ver="5.15.6"
+ver="5.16.12"
 
 inf () {
     echo "==> \033[1;32m$1\033[0m"
@@ -13,7 +13,7 @@ get () {
     inf "Getting source..."
     wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${ver}.tar.xz
     tar -xvf linux-${ver}.tar.xz -C ${src}/
-    wget https://raw.githubusercontent.com/archlinux/svntogit-packages/131a17b2319e4d56f3d95a1a2fca183e86474225/trunk/config
+    wget https://raw.githubusercontent.com/archlinux/svntogit-packages/eb49d8a9288e277c6e6fbfae5557ccba618b8f06/linux/trunk/PKGBUILD
     cp config ${src}/linux-${ver}/.config
 }
 

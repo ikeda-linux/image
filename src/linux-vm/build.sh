@@ -3,7 +3,7 @@
 src="$(pwd)/src"
 out="$(pwd)/out"
 dir="$(pwd)/."
-ver="5.15.6"
+ver="5.16.12"
 
 inf () {
     echo "==> \033[1;32m$1\033[0m"
@@ -32,7 +32,7 @@ build () {
 clean () {
     inf "Getting rid of build artifacts..."
     rm -rf linux-*.tar.xz > /dev/null 2>&1
-    #rm -rf ${src}/* ${src}/.* > /dev/null 2>&1
+    rm -rf ${src}/* ${src}/.* > /dev/null 2>&1
 }
 
 permissions () {
