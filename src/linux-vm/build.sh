@@ -20,7 +20,9 @@ build () {
     mkdir -p ${out}/overlay/boot
     mkdir -p ${out}/overlay/usr/
     inf "Building..."
-    make defconfig
+    cp ${dir}/kconfig .config
+    make olddefconfig
+    cp .config ${dir}/kconfig
     make -j$(nproc)
     inf "Copying binary..."
     cp ${src}/linux-${ver}/arch/x86_64/boot/bzImage ${out}/overlay/boot
