@@ -1,0 +1,11 @@
+name = "busybox"
+version = "1.34.1"
+description = "busybox userland utilities"
+authors = ["Various <?@busybox.net>"]
+license = "gplv2"
+tracked_files = [""]
+dependencies = []
+provides = ["coreutils"]
+conflicts = []
+reccomendations = []
+arch = "x86_64"

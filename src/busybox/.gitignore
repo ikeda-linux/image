@@ -1,0 +1,6 @@
+out/
+src/
+built/
+*tar*
+kernel-headers/
+things_linked.txt
