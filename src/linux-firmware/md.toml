@@ -1,0 +1,11 @@
+name = "linux-firmware"
+version = "20211027"
+description = "linux kernel's firmware blobs"
+authors = ["linus torvalds <torvalds@osdl.org>"]
+license = "gplv2"
+tracked_files = [""]
+dependencies = []
+provides = []
+conflicts = []
+reccomendations = []
+arch = "x86_64"
