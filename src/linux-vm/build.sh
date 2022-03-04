@@ -18,18 +18,21 @@ get () {
 build () {
     cd ${src}/linux-${ver}
     mkdir -p ${out}/overlay/boot
+    mkdir -p ${out}/overlay/usr/
     inf "Building..."
     make defconfig
     make -j$(nproc)
-    cd ${dir}
     inf "Copying binary..."
-    cp ${src}/linux-${ver}/arch/x86_64/boot/bzImage ${out}/overlay/boot 
+    cp ${src}/linux-${ver}/arch/x86_64/boot/bzImage ${out}/overlay/boot
+    inf "Installing modules..."
+    make INSTALL_MOD_PATH="${out}/overlay/usr" INSTALL_MOD_STRIP=1 modules_install
+    cd ${dir}
 }
 
 clean () {
     inf "Getting rid of build artifacts..."
     rm -rf linux-*.tar.xz > /dev/null 2>&1
-    rm -rf ${src}/* ${src}/.* > /dev/null 2>&1
+    #rm -rf ${src}/* ${src}/.* > /dev/null 2>&1
 }
 
 permissions () {

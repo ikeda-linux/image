@@ -20,11 +20,15 @@ get () {
 build () {
     cd ${src}/linux-${ver}
     mkdir -p ${out}/overlay/boot
+    mkdir -p ${out}/overlay/usr/
     inf "Building..."
+    make olddefconfig
     make -j$(nproc)
+    inf "Copying kernel binary..."
+    cp ${src}/linux-${ver}/arch/x86_64/boot/bzImage ${out}/overlay/boot 
+    inf "Installing modules..."
+    make INSTALL_MOD_PATH="${out}/overlay/usr" INSTALL_MOD_STRIP=1 modules_install
     cd ${dir}
-    inf "Copying binary..."
-    cp ${src}/linux-${ver}/arch/$(arch)/boot/bzImage ${out}/overlay/boot 
 }
 
 clean () {
