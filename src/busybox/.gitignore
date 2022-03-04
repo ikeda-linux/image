@@ -1,6 +1,7 @@
 out/
 src/
 built/
-*tar*
+*tar.zst*
 kernel-headers/
 things_linked.txt
+fuck-tar/

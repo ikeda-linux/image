@@ -49,5 +49,8 @@ mount -a
 # make the root writable if this hasn't been done already
 mount -o remount,rw /
 
+# Service manager
+rustysd -c /etc/rustysd &
+
 cat /etc/prelogin
 # end of /etc/startup

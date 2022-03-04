@@ -1,4 +1,5 @@
-*tar*
+*tar.zst*
 built/
 out/
 src/
+*tar.gz
