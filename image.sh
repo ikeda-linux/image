@@ -12,6 +12,11 @@ if [[ ! "$1" == "" ]]; then
     NDISK="$1"
 fi
 
+KERN=""
+if [[ ! "$2" == "" ]]; then
+	KERN="$2"
+fi
+
 UNPACK_TGT="ikeda_fs"
 
 if [[ -d ${UNPACK_TGT} ]]; then
@@ -27,10 +32,18 @@ mkdir ${UNPACK_TGT}
 # since tar overwrites.....
 tar -xf out/filesystem.tar.zst -C ${UNPACK_TGT}/
 
-for pkg in $(ls out/ | grep zst | grep -v filesystem | grep -v busybox); do
+for pkg in $(ls out/ | grep zst | grep -v filesystem | grep -v busybox | grep -v linux); do
     echo $pkg
     tar --skip-old-files -xf out/${pkg} -C ${UNPACK_TGT}/
 done
+
+if [[ "$KERN" == "" ]]; then
+	printf "for kernel, enter 'vm' or 'vanilla': "
+	read KERN
+fi
+
+tar --skip-old-files -xf out/linux-${KERN}.tar.zst -C ${UNPACK_TGT}/
+tar --skip-old-files -xf out/linux-firmware.tar.zst -C ${UNPACK_TGT}/
 
 rm -rf ${UNPACK_TGT}/{scripts,md.toml}
 mv ${UNPACK_TGT}/overlay/* ${UNPACK_TGT}/.
