@@ -118,3 +118,7 @@ else
         fi
     fi
 fi
+
+if [[ -n $SUDO_UID ]]; then
+  chown $SUDO_UID:$SUDO_GID ikeda
+fi
