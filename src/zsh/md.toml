@@ -1,0 +1,11 @@
+name = "zsh"
+version = "5.8"
+description = "z shell"
+authors = ["no idea"]
+license = ""
+tracked_files = [""]
+dependencies = []
+provides = ["zsh"]
+conflicts = []
+reccomendations = []
+arch = "x86_64"
