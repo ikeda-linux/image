@@ -1,5 +1,5 @@
 name = "linux-firmware"
-version = "20211027"
+version = "20220209"
 description = "linux kernel's firmware blobs"
 authors = ["linus torvalds <torvalds@osdl.org>"]
 license = "gplv2"

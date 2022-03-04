@@ -3,7 +3,7 @@
 src="$(pwd)/src"
 out="$(pwd)/out"
 dir="$(pwd)/."
-ver="1.34.1"
+ver="1.35.0"
 
 # Gentoo is fucked so this *could(?)* be different on other hosts
 MGCC="musl-gcc"

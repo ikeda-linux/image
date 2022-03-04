@@ -71,3 +71,10 @@ fi
 pushd limine
 ./limine-install-linux-x86_64 ../ikeda
 popd
+
+printf "Remove FS dir? (Y/n)"
+read rmd
+
+if [[ ! "$rmd" == "n" ]]; then
+    rm -rfv ${UNPACK_TGT}
+fi

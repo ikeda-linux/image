@@ -3,7 +3,7 @@
 src="$(pwd)/src"
 out="$(pwd)/out"
 dir="$(pwd)/."
-ver="20211027"
+ver="20220209"
 
 srcurl="https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/snapshot/linux-firmware-${ver}.tar.gz"
 
