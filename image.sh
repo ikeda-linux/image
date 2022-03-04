@@ -2,6 +2,11 @@
 
 set -e
 
+if [[ ! "$EUID" == "0" ]]; then
+    echo "Run as root"
+    exit 1
+fi
+
 UNPACK_TGT="ikeda_fs"
 
 if [[ -d ${UNPACK_TGT} ]]; then
@@ -13,7 +18,7 @@ mkdir ${UNPACK_TGT}
 # since tar overwrites.....
 tar -xf out/filesystem.tar.zst -C ${UNPACK_TGT}/
 
-for pkg in $(ls out/ | grep zst | grep -v filesystem); do
+for pkg in $(ls out/ | grep zst | grep -v filesystem | grep -v busybox); do
     echo $pkg
     tar --skip-old-files -xf out/${pkg} -C ${UNPACK_TGT}/
 done
@@ -21,6 +26,10 @@ done
 rm -rf ${UNPACK_TGT}/{scripts,md.toml}
 mv ${UNPACK_TGT}/overlay/* ${UNPACK_TGT}/.
 rm -rf ${UNPACK_TGT}/overlay
+
+# TODO: sgma into symlink somehow?
+# tar cannot into symlink (and sgma use tar {for now})
+cp -rv src/busybox/fuck-tar/* ${UNPACK_TGT}/.
 
 size=$(du -sh ${UNPACK_TGT} | awk '{ print $1 }')
 
@@ -38,14 +47,27 @@ else
     pushd limine && git pull && popd
 fi
 
-echo "${UNPACK_TGT}" >> .fsroot
+fs_root=${UNPACK_TGT}
 
-chmod +x image_root.sh
-sudo ./image_root.sh
-rm .fsroot
+loopdev=$(losetup -P -f --show ikeda)
+mkdir ikeda_mount
+mkfs.ext4 ${loopdev}p1
+mount ${loopdev}p1 ikeda_mount
+cp -rv ${fs_root}/* ikeda_mount/.
+partuuid=$(fdisk -l ./ikeda | grep "Disk identifier" | awk '{split($0,a,": "); print a[2]}' | sed 's/0x//g')
+echo "PARTUUID=${partuuid}"
+cp limine/limine.sys ikeda_mount/boot/. -v
+sed -i "s/something/${partuuid}-01/g" ikeda_mount/boot/limine.cfg
+
+if [ -d ikeda_mount ]; then
+    findmnt | grep ikeda
+    if [[ "$?" == "0" ]]; then
+        umount ikeda_mount
+    fi
+    rm ikeda_mount -rf
+    losetup -D
+fi
 
 pushd limine
-
 ./limine-install-linux-x86_64 ../ikeda
-
 popd
