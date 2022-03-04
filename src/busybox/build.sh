@@ -30,9 +30,11 @@ build () {
     cd busybox-${ver}
     mkdir -p ${out}/overlay/usr/{sbin,bin}
     mkdir -p ${out}/overlay/{bin,sbin}
+    inf "Config"
+    make menuconfig
     inf "Building..."
     make CC=${MGCC} && cp .config ${dir}/bb-config
-
+    cp .config ${dir}/bb-config
     inf "Installing"
     cp busybox ${out}/overlay/usr/bin/busybox
     pushd ${out}/overlay
