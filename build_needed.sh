@@ -12,3 +12,4 @@ else
 fi
 
 sudo sgma build linux-${ktype}
+sudo sgma build linux-firmware

@@ -22,6 +22,7 @@ build () {
     inf "Building..."
     cp ${dir}/kconfig .config
     make olddefconfig
+	make menuconfig
     cp .config ${dir}/kconfig
     make -j$(nproc)
     inf "Copying binary..."
