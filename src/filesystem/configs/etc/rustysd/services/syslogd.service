@@ -1,0 +1,10 @@
+[Unit]
+Description= Start syslogd
+
+[Service]
+ExecStart=/sbin/syslogd -n
+Type=simple
+Restart=always
+
+[Install]
+WantedBy=default.target

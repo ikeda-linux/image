@@ -1,0 +1,11 @@
+name = "filesystem"
+version = "1.0.0"
+description = "ikeda filesystem base"
+authors = ["ratthew <matt@tar.black>"]
+license = ""
+tracked_files = [""]
+dependencies = []
+provides = []
+conflicts = []
+reccomendations = []
+arch = "any"
