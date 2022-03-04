@@ -13,8 +13,6 @@ get () {
     inf "Getting source..."
     wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${ver}.tar.xz
     tar -xvf linux-${ver}.tar.xz -C ${src}/
-    wget https://raw.githubusercontent.com/archlinux/svntogit-packages/eb49d8a9288e277c6e6fbfae5557ccba618b8f06/linux/trunk/config
-    cp config ${src}/linux-${ver}/.config
 }
 
 build () {
@@ -22,12 +20,15 @@ build () {
     mkdir -p ${out}/overlay/boot
     mkdir -p ${out}/overlay/usr/
     inf "Building..."
+	cp ${dir}/kconfig .config
     make olddefconfig
+	make menuconfig
     make -j$(nproc)
     inf "Copying kernel binary..."
     cp ${src}/linux-${ver}/arch/x86_64/boot/bzImage ${out}/overlay/boot 
     inf "Installing modules..."
     make INSTALL_MOD_PATH="${out}/overlay/usr" INSTALL_MOD_STRIP=1 modules_install
+	cp .config ${dir}/kconfig
     cd ${dir}
 }
 
