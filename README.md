@@ -1,6 +1,10 @@
 # kbuilds
 Package sources for Ikeda
 
+## Arch depends:
+* `base-devel`
+* `musl`
+
 ## Build image:
 * (Have sigma installed & in path)
 * Use `sudo sgma build <packages>` where `<packages>` is (all packge names in src - one of the kernels) {either `linux-vm` or `linux-vanilla`}
