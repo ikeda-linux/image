@@ -31,22 +31,43 @@ fi
 
 mkdir ${UNPACK_TGT}
 
-# since tar overwrites.....
-tar -xf packages/filesystem*.tar.zst -C ${UNPACK_TGT}/
-
-for pkg in $(ls packages/ | grep zst | grep -v filesystem | grep -v linux); do
-    echo $pkg
-    tar --skip-old-files -xf packages/${pkg} -C ${UNPACK_TGT}/
-done
-
-if [[ "$KERN" == "" ]]; then
-	printf "for kernel, enter 'vm' or 'vanilla': "
-	read KERN
+if [[ ! -f .x86_64 ]]; then
+    echo "Put ESCACPED path to x86_64 repo into '.x86_64'"
+    exit 1
+else
+    X86=$(cat .x86_64)
 fi
 
-tar --skip-old-files -xf packages/linux-${KERN}*.tar.zst -C ${UNPACK_TGT}/
-tar --skip-old-files -xf packages/linux-firmware*.tar.zst -C ${UNPACK_TGT}/
-rm -rf ${UNPACK_TGT}/{scripts,md.toml,.BUILDINFO,.MTREE,.PKGINFO}
+if [[ ! -f .any ]]; then
+   echo "Put ESCACPED path to 'any' repo into '.any'"
+    exit 1 
+else
+    ANY=$(cat .any)
+fi
+
+[[ -f strap.conf ]] && rm strap.conf
+cp strap.conf.in strap.conf
+sed -i "s/%X86%/${X86}/g" strap.conf
+sed -i "s/%ANY%/${ANY}/g" strap.conf
+
+pacstrap -C strap.conf ${UNPACK_TGT} linux-vm filesystem busybox bash linux-firmware pacman rustysd zsh
+
+# since tar overwrites.....
+#tar -xf packages/filesystem*.tar.zst -C ${UNPACK_TGT}/
+
+#for pkg in $(ls packages/ | grep zst | grep -v filesystem | grep -v linux); do
+#    echo $pkg
+#    tar --skip-old-files -xf packages/${pkg} -C ${UNPACK_TGT}/
+#done
+
+#if [[ "$KERN" == "" ]]; then
+#	printf "for kernel, enter 'vm' or 'vanilla': "
+#	read KERN
+#fi
+
+#tar --skip-old-files -xf packages/linux-${KERN}*.tar.zst -C ${UNPACK_TGT}/
+#tar --skip-old-files -xf packages/linux-firmware*.tar.zst -C ${UNPACK_TGT}/
+#rm -rf ${UNPACK_TGT}/{scripts,md.toml,.BUILDINFO,.MTREE,.PKGINFO}
 
 size=$(du -sh ${UNPACK_TGT} | awk '{ print $1 }')
 
