@@ -2,17 +2,19 @@
 
 set -e
 
+LIMINE_BRANCH="v3.12.2-binary"
+KERN="vm"
+NDISK=""
+
 if [[ ! "$EUID" == "0" ]]; then
     echo "Run as root"
     exit 1
 fi
 
-NDISK=""
 if [[ ! "$1" == "" ]]; then
     NDISK="$1"
 fi
 
-KERN=""
 if [[ ! "$2" == "" ]]; then
 	KERN="$2"
 fi
@@ -30,11 +32,11 @@ fi
 mkdir ${UNPACK_TGT}
 
 # since tar overwrites.....
-tar -xf out/filesystem.tar.zst -C ${UNPACK_TGT}/
+tar -xf packages/filesystem*.tar.zst -C ${UNPACK_TGT}/
 
-for pkg in $(ls out/ | grep zst | grep -v filesystem | grep -v busybox | grep -v linux); do
+for pkg in $(ls packages/ | grep zst | grep -v filesystem | grep -v linux); do
     echo $pkg
-    tar --skip-old-files -xf out/${pkg} -C ${UNPACK_TGT}/
+    tar --skip-old-files -xf packages/${pkg} -C ${UNPACK_TGT}/
 done
 
 if [[ "$KERN" == "" ]]; then
@@ -42,16 +44,9 @@ if [[ "$KERN" == "" ]]; then
 	read KERN
 fi
 
-tar --skip-old-files -xf out/linux-${KERN}.tar.zst -C ${UNPACK_TGT}/
-tar --skip-old-files -xf out/linux-firmware.tar.zst -C ${UNPACK_TGT}/
-
-rm -rf ${UNPACK_TGT}/{scripts,md.toml}
-mv ${UNPACK_TGT}/overlay/* ${UNPACK_TGT}/.
-rm -rf ${UNPACK_TGT}/overlay
-
-# TODO: sgma into symlink somehow?
-# tar cannot into symlink (and sgma use tar {for now})
-cp -rv src/busybox/fuck-tar/* ${UNPACK_TGT}/.
+tar --skip-old-files -xf packages/linux-${KERN}*.tar.zst -C ${UNPACK_TGT}/
+tar --skip-old-files -xf packages/linux-firmware*.tar.zst -C ${UNPACK_TGT}/
+rm -rf ${UNPACK_TGT}/{scripts,md.toml,.BUILDINFO,.MTREE,.PKGINFO}
 
 size=$(du -sh ${UNPACK_TGT} | awk '{ print $1 }')
 
@@ -67,7 +62,7 @@ parted ikeda mklabel msdos --script
 parted --script ikeda 'mkpart primary ext4 1 -1' 
 
 if [[ ! -d limine ]]; then
-    git clone https://github.com/limine-bootloader/limine.git --branch=latest-binary --depth=1
+    git clone https://github.com/limine-bootloader/limine.git --branch=${LIMINE_BRANCH} --depth=1
 else
     pushd limine && git pull && popd
 fi
@@ -96,7 +91,8 @@ if [ -d ikeda_mount ]; then
 fi
 
 pushd limine
-./limine-install-linux-x86_64 ../ikeda
+make
+./limine-deploy ../ikeda
 popd
 
 printf "Remove FS dir? (Y/n): "

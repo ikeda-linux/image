@@ -1,6 +1,2 @@
-# kbuilds
-Package sources for Ikeda
-
-## Arch depends:
-* `base-devel`
-* `musl`
+# Image
+Ikeda image maker thing
