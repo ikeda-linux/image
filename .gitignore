@@ -6,6 +6,3 @@ ikeda_fs/
 ikeda_mount/
 limine/
 ikeda
-.any
-.x86_64
-strap.conf
