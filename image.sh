@@ -31,7 +31,7 @@ fi
 
 mkdir ${UNPACK_TGT}
 
-pacstrap -M -G -C strap.conf ${UNPACK_TGT} linux-vm filesystem busybox bash linux-firmware pacman rustysd zsh
+pacstrap -M -G -C strap.conf ${UNPACK_TGT} linux-vm linux-firmware base
 
 size=$(du -sh ${UNPACK_TGT} | awk '{ print $1 }')
 
