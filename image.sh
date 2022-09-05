@@ -4,6 +4,7 @@ set -e
 
 LIMINE_VER="3.20.1"
 LIMINE_SRC="https://github.com/limine-bootloader/limine/releases/download/v${LIMINE_VER}/limine-${LIMINE_VER}.tar.gz"
+
 KERN="vm"
 NDISK=""
 
@@ -13,11 +14,7 @@ if [[ ! "$EUID" == "0" ]]; then
 fi
 
 if [[ ! "$1" == "" ]]; then
-    NDISK="$1"
-fi
-
-if [[ ! "$2" == "" ]]; then
-	KERN="$2"
+	KERN="$1"
 fi
 
 UNPACK_TGT="ikeda_fs"
@@ -32,7 +29,7 @@ fi
 
 mkdir ${UNPACK_TGT}
 
-pacstrap -M -G -C strap.conf ${UNPACK_TGT} linux-vm linux-firmware base limine
+pacstrap -M -G -C strap.conf ${UNPACK_TGT} linux-${KERN} linux-firmware base limine
 
 size=$(du -sh ${UNPACK_TGT} | awk '{ print $1 }')
 
