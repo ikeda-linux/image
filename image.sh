@@ -2,7 +2,8 @@
 
 set -e
 
-LIMINE_BRANCH="v3.12.2-binary"
+LIMINE_VER="3.20.1"
+LIMINE_SRC="https://github.com/limine-bootloader/limine/releases/download/v${LIMINE_VER}/limine-${LIMINE_VER}.tar.gz"
 KERN="vm"
 NDISK=""
 
@@ -31,7 +32,7 @@ fi
 
 mkdir ${UNPACK_TGT}
 
-pacstrap -M -G -C strap.conf ${UNPACK_TGT} linux-vm linux-firmware base
+pacstrap -M -G -C strap.conf ${UNPACK_TGT} linux-vm linux-firmware base limine
 
 size=$(du -sh ${UNPACK_TGT} | awk '{ print $1 }')
 
@@ -46,12 +47,6 @@ fallocate -l${NDISK}M ikeda
 parted ikeda mklabel msdos --script
 parted --script ikeda 'mkpart primary ext4 1 -1' 
 
-if [[ ! -d limine ]]; then
-    git clone https://github.com/limine-bootloader/limine.git --branch=${LIMINE_BRANCH} --depth=1
-else
-    pushd limine && git pull && popd
-fi
-
 fs_root=${UNPACK_TGT}
 
 loopdev=$(losetup -P -f --show ikeda)
@@ -63,7 +58,17 @@ mount ${loopdev}p1 ikeda_mount
 cp -rv ${fs_root}/* ikeda_mount/.
 partuuid=$(fdisk -l ./ikeda | grep "Disk identifier" | awk '{split($0,a,": "); print a[2]}' | sed 's/0x//g')
 echo "PARTUUID=${partuuid}"
-cp limine/limine.sys ikeda_mount/boot/. -v
+
+[[ -d limine-${LIMINE_VER} ]] && rm -rf limine-${LIMINE_VER}
+wget $LIMINE_SRC
+tar -xf limine*
+pushd limine-${LIMINE_VER}
+CC=musl-gcc ./configure --enable-bios --enable-uefi-x86_64 --enable-limine-deploy
+make
+cp bin/limine.sys ../ikeda_mount/boot/. -v
+popd
+
+
 sed -i "s/something/${partuuid}-01/g" ikeda_mount/boot/limine.cfg
 
 if [ -d ikeda_mount ]; then
@@ -75,10 +80,8 @@ if [ -d ikeda_mount ]; then
     losetup -D
 fi
 
-pushd limine
-make
-./limine-deploy ../ikeda
-popd
+limine-${LIMINE_VER}/bin/limine-deploy ./ikeda
+rm -rf limine-${LIMINE_VER}*
 
 printf "Remove FS dir? (Y/n): "
 read rmd
