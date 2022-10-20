@@ -43,7 +43,10 @@ if [[ "$resconf" == "y" || ! -f ${PAC_CONF}.use ]]; then
     fi
 fi
 
-pacstrap -M -G -C ${PAC_CONF}.use ${UNPACK_TGT} linux-${KERN} linux-firmware base limine
+more=""
+[[ -f packages-extra ]] && more=$(cat packages-extra)
+
+pacstrap -M -G -C ${PAC_CONF}.use ${UNPACK_TGT} linux-${KERN} $(cat packages) ${more}
 
 size=$(du -sh ${UNPACK_TGT} | awk '{ print $1 }')
 
