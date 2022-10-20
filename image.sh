@@ -1,20 +1,18 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
-LIMINE_VER="3.20.1"
+LIMINE_VER="4.0.2"
 LIMINE_SRC="https://github.com/limine-bootloader/limine/releases/download/v${LIMINE_VER}/limine-${LIMINE_VER}.tar.gz"
 
 KERN="vm"
 NDISK=""
 
+PAC_CONF="strap-local.conf"
+
 if [[ ! "$EUID" == "0" ]]; then
     echo "Run as root"
     exit 1
-fi
-
-if [[ ! "$1" == "" ]]; then
-	KERN="$1"
 fi
 
 UNPACK_TGT="ikeda_fs"
@@ -29,7 +27,23 @@ fi
 
 mkdir ${UNPACK_TGT}
 
-pacstrap -M -G -C strap.conf ${UNPACK_TGT} linux-${KERN} linux-firmware base limine
+resconf="n"
+
+if [[ -f ${PAC_CONF}.use ]]; then
+    printf "Reset ${PAC_CONF}? (y/N): "
+    read resconf
+fi
+
+if [[ "$resconf" == "y" || ! -f ${PAC_CONF}.use ]]; then
+    cp ${PAC_CONF} ${PAC_CONF}.use
+    if [[ "${PAC_CONF}" == "strap-local.conf" ]]; then
+        printf "Path to mlc-configs repo: "
+        read srcdir
+        sed -i "s|REPOLOC|$srcdir|g" ${PAC_CONF}.use 
+    fi
+fi
+
+pacstrap -M -G -C ${PAC_CONF}.use ${UNPACK_TGT} linux-${KERN} linux-firmware base limine
 
 size=$(du -sh ${UNPACK_TGT} | awk '{ print $1 }')
 

@@ -4,5 +4,6 @@ unpack/
 .fsroot
 ikeda_fs/
 ikeda_mount/
+ikeda-build/
 limine*
 ikeda
